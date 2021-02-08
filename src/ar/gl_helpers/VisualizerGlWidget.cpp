@@ -56,7 +56,7 @@ namespace mico{
 
     void VisualizerGlWidget::updateBackgroundImage(const cv::Mat &_image) {
         if (_image.rows) {
-            currentBg_ = _image;
+            cv::cvtColor(_image, currentBg_, cv::COLOR_RGB2BGR);
         };
     }
 
@@ -73,9 +73,8 @@ namespace mico{
     
     void VisualizerGlWidget::paintGL(){
         scene_.moveCamera(pose_);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
-        drawBackground();
         scene_.displayAll();
+        drawBackground();
         
     }
     
@@ -119,7 +118,7 @@ namespace mico{
 
     void VisualizerGlWidget::drawBackground() {
 
-        if (currentBg_.rows) {
+        //if (bgTex_ != 0) {
             // Save previous matrix information
             glMatrixMode(GL_PROJECTION);
             glPushMatrix();
@@ -128,6 +127,7 @@ namespace mico{
             glMatrixMode(GL_MODELVIEW);
             glPushMatrix();
             glLoadIdentity();
+
 
             // Load image
             GLuint bgTex;
@@ -139,7 +139,7 @@ namespace mico{
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             // load and generate the texture
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_BGR, currentBg_.cols, currentBg_.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, currentBg_.data);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, currentBg_.cols, currentBg_.rows, 0, GL_RGB, GL_UNSIGNED_BYTE, currentBg_.data);
             glGenerateMipmap(GL_TEXTURE_2D);
 
             //
@@ -148,6 +148,8 @@ namespace mico{
             // Draw background
             glDisable(GL_DEPTH_TEST);
             glDisable(GL_LIGHTING);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glBindTexture(GL_TEXTURE_2D, bgTex);
             glEnable(GL_TEXTURE_2D);
             glBegin(GL_QUADS);
@@ -157,9 +159,10 @@ namespace mico{
             glTexCoord2f(0.0, 0.0); glVertex2f(0.00, 1.0);
             glEnd();
 
-            glDisable(GL_TEXTURE_2D);;
-            glEnable(GL_DEPTH_TEST);
+            glDisable(GL_TEXTURE_2D);
+            glDisable(GL_BLEND);
             glEnable(GL_LIGHTING);
+            glEnable(GL_DEPTH_TEST);
 
             // Recover previous matrix infromation.
             glMatrixMode(GL_PROJECTION);
@@ -167,6 +170,6 @@ namespace mico{
             glMatrixMode(GL_MODELVIEW);
             glPopMatrix();
 
-        }
+        //}
     }
 }

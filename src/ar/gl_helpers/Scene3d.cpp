@@ -125,7 +125,7 @@ namespace mico{
     }
 
     void Scene3d::displayAll(){
-        
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
 
         // Place camera
         glMatrixMode(GL_PROJECTION); // To operate on the Projection matrix

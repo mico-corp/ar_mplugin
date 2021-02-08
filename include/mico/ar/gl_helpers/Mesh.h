@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------------------------------------
-//  Cameras wrapper MICO plugin
+//  AR MICO plugin
 //---------------------------------------------------------------------------------------------------------------------
 //  Copyright 2020 Pablo Ramon Soria (a.k.a. Bardo91) pabramsor@gmail.com
 //---------------------------------------------------------------------------------------------------------------------
@@ -20,50 +20,40 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#include <mico/ar/flow/BlockArucoCoordinates.h>
-#include <flow/Outpipe.h>
-#include <flow/Policy.h>
+#ifndef MICO_AR_GL_HELPERS_MESH_H_
+#define MICO_AR_GL_HELPERS_MESH_H_
 
-#include <opencv2/opencv.hpp>
 #include <Eigen/Eigen>
 
-namespace mico{
-        BlockArucoCoordinates::BlockArucoCoordinates(){
-            createPipe<cv::Mat>("image");
-
-            createPolicy({  flow::makeInput<Eigen::Matrix4f>("coordinates") });
-
-            registerCallback({"image"}, 
-                [&](flow::DataFlow _data){
-                    auto image = _data.get<cv::Mat>("image");
-                    Eigen::Matrix4f coordinates = Eigen::Matrix4f::Identity();
-                    if(getPipe("coordinates")->registrations()){
-                        getPipe("coordinates")->flush(coordinates);
-                    }
-                }
-            );
-
-            
-            registerCallback({"input"}, 
-                [&](flow::DataFlow _data){
-                    auto u_ = _data.get<float>("input");
-                }
-            );
-        }
-
-        bool BlockArucoCoordinates::configure(std::vector<flow::ConfigParameterDef> _params) {
-            if(auto param = getParamByName(_params, "id"); param){
-                id_ = param.value().asInteger();
-            }
-
-            return true;
-        }
-        
-        std::vector<flow::ConfigParameterDef> BlockArucoCoordinates::parameters(){
-            return {
-                {"id", flow::ConfigParameterDef::eParameterType::INTEGER, 1}
-            };
-        }
-
-
+namespace stl_reader{
+    template<typename T1_, typename T2_>
+    class StlMesh;
 }
+
+namespace mico {
+    /// Class that wraps a single mesh to be display
+    /// @ingroup aerox_gl
+    class Mesh{
+    public:
+        bool loadMesh(std::string _path);
+        void transform(Eigen::Matrix4f _t);
+        void displayMesh();
+        void setColor(float _r, float _g, float _b, float _a);
+
+    private:
+        void setMaterial(   std::vector<float> _ambient = {0.7f, 0.7f, 0.7f, 1.0f}, 
+                            std::vector<float> _diffuse = {1.0f, 1.0f, 1.0f, 1.0f}, 
+                            std::vector<float> _specular = {1.0f, 1.0f, 1.0f, 1.0f}, 
+                            float _shininess = 5.0f);
+
+    private:
+        stl_reader::StlMesh<float, unsigned int> *meshReader_;
+        float r_=0.7f, g_=0.7f, b_=0.7f, a_=1.0f;
+        Eigen::Vector3f translation_ = {0,0,0};
+        Eigen::Vector3f rpy_ = {0,0,0};
+        Eigen::Matrix4f pose_;
+    
+    };
+}
+
+#endif

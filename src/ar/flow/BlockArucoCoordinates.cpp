@@ -20,34 +20,50 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
+#include <mico/ar/flow/BlockArucoCoordinates.h>
+#include <flow/Outpipe.h>
+#include <flow/Policy.h>
 
-#ifndef MICO_AR_FLOW_BLOCKARUCOCOORDINATES_H_
-#define MICO_AR_FLOW_BLOCKARUCOCOORDINATES_H_
-
-#include <flow/Block.h>
+#include <opencv2/opencv.hpp>
+#include <Eigen/Eigen>
 
 namespace mico{
+        BlockArucoCoordinates::BlockArucoCoordinates(){
+            createPipe<cv::Mat>("image");
 
-    class BlockArucoCoordinates:public flow::Block{
-    public:
-        virtual std::string name() const override {return "Block Aruco CS";}        
+            createPolicy({  flow::makeInput<Eigen::Matrix4f>("coordinates") });
+
+            registerCallback({"image"}, 
+                [&](flow::DataFlow _data){
+                    auto image = _data.get<cv::Mat>("image");
+                    Eigen::Matrix4f coordinates = Eigen::Matrix4f::Identity();
+                    if(getPipe("coordinates")->registrations()){
+                        getPipe("coordinates")->flush(coordinates);
+                    }
+                }
+            );
+
+            
+            registerCallback({"input"}, 
+                [&](flow::DataFlow _data){
+                    auto u_ = _data.get<float>("input");
+                }
+            );
+        }
+
+        bool BlockArucoCoordinates::configure(std::vector<flow::ConfigParameterDef> _params) {
+            if(auto param = getParamByName(_params, "id"); param){
+                id_ = param.value().asInteger();
+            }
+
+            return true;
+        }
         
-        BlockArucoCoordinates();
-
-        virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
-        std::vector<flow::ConfigParameterDef> parameters() override;
-
-        std::string description() const override {return    "Block Aruco CS"
-                                                            "   - \n";};
-
-    private:
-        int id_ = 1;
-    };
-
+        std::vector<flow::ConfigParameterDef> BlockArucoCoordinates::parameters(){
+            return {
+                {"id", flow::ConfigParameterDef::eParameterType::INTEGER, 1}
+            };
+        }
 
 
 }
-
-
-
-#endif

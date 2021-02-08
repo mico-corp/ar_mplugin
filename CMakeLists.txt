@@ -54,12 +54,21 @@ add_mplugin(    PLUGIN_NAME ${PLUGIN_NAME}
 ##################################################
 
 find_package(OpenCV REQUIRED COMPONENTS core)
-if(${OpenCV_FOUND})
-  mplugin_include_directory( PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_INCLUDES ${OpenCV_INCLUDE_DIRS})
-  mplugin_link_library( PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES ${OpenCV_LIBS})
-  mplugin_compile_definition( PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_DEFINITIONS HAS_OPENCV)
-endif()
+mplugin_include_directory( PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_INCLUDES ${OpenCV_INCLUDE_DIRS})
+mplugin_link_library( PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES ${OpenCV_LIBS})
+mplugin_compile_definition( PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_DEFINITIONS HAS_OPENCV)
 
+
+find_package(FreeGLUT REQUIRED)
+mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES FreeGLUT::freeglut)
+
+if(WIN32)
+	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES "${MICO_ROOT_DIR}/dependencies/lib/Release/x64/glew32.lib")
+	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES "${MICO_ROOT_DIR}/dependencies/lib/Release/x64/glew32.lib")
+	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES "${MICO_ROOT_DIR}/dependencies/lib/Release/x64/glew32s.lib")
+elseif(linux)
+	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES GL glut GLU GLEW)
+endif()
 ##################################################
 ######    Documentation.                  ########
 ##################################################

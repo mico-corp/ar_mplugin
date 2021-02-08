@@ -252,25 +252,25 @@ namespace mico{
         glLineWidth((GLfloat)3.0);
         glBegin(GL_LINES);
             glVertex3f(_pose(0,3), _pose(1,3), _pose(2,3));
-            glVertex3f( _pose(0,3) + _pose(0,0), 
-                        _pose(1,3) + _pose(1,0), 
-                        _pose(2,3) + _pose(2,0));
+            glVertex3f( _pose(0,3) + _pose(0,0)*0.2, 
+                        _pose(1,3) + _pose(1,0)*0.2,
+                        _pose(2,3) + _pose(2,0)*0.2);
         glEnd();
         // Y
         glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
         glBegin(GL_LINES);
             glVertex3f(_pose(0,3), _pose(1,3), _pose(2,3));
-            glVertex3f( _pose(0,3) + _pose(0,1), 
-                        _pose(1,3) + _pose(1,1), 
-                        _pose(2,3) + _pose(2,1));
+            glVertex3f( _pose(0,3) + _pose(0,1)*0.2, 
+                        _pose(1,3) + _pose(1,1)*0.2, 
+                        _pose(2,3) + _pose(2,1)*0.2);
         glEnd();
         // Z
         glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
         glBegin(GL_LINES);
             glVertex3f(_pose(0,3), _pose(1,3), _pose(2,3));
-            glVertex3f( _pose(0,3) + _pose(0,2), 
-                        _pose(1,3) + _pose(1,2), 
-                        _pose(2,3) + _pose(2,2));
+            glVertex3f( _pose(0,3) + _pose(0,2)*0.2, 
+                        _pose(1,3) + _pose(1,2)*0.2, 
+                        _pose(2,3) + _pose(2,2)*0.2);
         glEnd();
         glLineWidth((GLfloat)1.0);
     }

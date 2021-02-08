@@ -41,10 +41,11 @@ set(EXTRA_COMPILE_DEFS "")
 
 file(GLOB_RECURSE MICO_AR_SOURCE_FILES "src/*.cpp" "src/*.c")
 file(GLOB_RECURSE MICO_AR_HEADER_FILES "include/*.h" "include/*.inl")
+qt5_wrap_cpp(MOC_FILES src/ar/gl_helpers/VisualizerGlWidget.cpp include/mico/ar/gl_helpers/VisualizerGlWidget.h)
  
 SET(MICO_MODULES ${MICO_MODULES} ar PARENT_SCOPE)
 add_mplugin(    PLUGIN_NAME ${PLUGIN_NAME} 
-                PLUGIN_SOURCES ${MICO_AR_SOURCE_FILES}
+                PLUGIN_SOURCES ${MICO_AR_SOURCE_FILES} ${MOC_FILES}
 				PLUGIN_HEADERS  ${MICO_AR_HEADER_FILES} 
 				MICO_DEPS core
 				)
@@ -69,6 +70,10 @@ if(WIN32)
 elseif(linux)
 	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES GL glut GLU GLEW)
 endif()
+
+
+add_subdirectory(apps)
+
 ##################################################
 ######    Documentation.                  ########
 ##################################################

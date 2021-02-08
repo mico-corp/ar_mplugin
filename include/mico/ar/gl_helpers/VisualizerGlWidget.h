@@ -20,45 +20,73 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
+#ifndef MICO_AR_GLHELPERS_VISUALIZERGLWIDGET_H_
+#define MICO_AR_GLHELPERS_VISUALIZERGLWIDGET_H_
 
-#ifndef MICO_AR_FLOW_BLOCKARUCOCOORDINATES_H_
-#define MICO_AR_FLOW_BLOCKARUCOCOORDINATES_H_
+#include <QOpenGLWidget>
+#include <QOpenGLFunctions>
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
+#include <QWheelEvent>
+#include <QTimer>
 
-#include <flow/Block.h>
+#include <mutex>
+
+#include <mico/ar/gl_helpers/Scene3d.h>
+#include <Eigen/Eigen>
+
 #include <opencv2/opencv.hpp>
 
-namespace cv{
-    namespace aruco {
-        class Dictionary;
-    }
-}
+#ifndef M_PI
+# define M_PI 3.14159265359 
+#endif
+
 
 namespace mico{
 
-    class BlockArucoCoordinates:public flow::Block{
+    /// QT widget to visualize in OpenGL the trajectory, map and any 3d information required
+    /// @ingroup app_anita_gui
+    class VisualizerGlWidget: public QOpenGLWidget, protected QOpenGLFunctions {
+        Q_OBJECT
     public:
-        virtual std::string name() const override {return "Block Aruco CS";}        
+        explicit VisualizerGlWidget(QWidget *_parent = 0);
+        ~VisualizerGlWidget();
+
+        void addPoint(Scene3d::Point _p);
+        void addLine(Scene3d::Point _p1, Scene3d::Point _p2);
         
-        BlockArucoCoordinates();
+        void updatePose(Eigen::Matrix4f _pose);
 
-        virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
-        std::vector<flow::ConfigParameterDef> parameters() override;
+        void clearAll();
 
-        std::string description() const override {return    "Block Aruco CS"
-                                                            "   - \n";};
+        void updateBackgroundImage(const cv::Mat& _image);
+
+    public slots:
+        void cleanup();
+
+    protected:
+        void initializeGL() override;
+        void paintGL() override;
+        void resizeGL(int width, int height) override;
+
+        void keyReleaseEvent(QKeyEvent *event) override;
+        void keyPressEvent(QKeyEvent *event) override;
+        void mousePressEvent(QMouseEvent *event) override;
+        void mouseReleaseEvent(QMouseEvent *event) override;
+        void mouseMoveEvent(QMouseEvent *event) override;
+        void wheelEvent(QWheelEvent *event) override;
+    
+        void drawBackground();
 
     private:
-        int id_ = 1;
-        cv::Ptr<cv::aruco::Dictionary> dictionary_;
+        Scene3d scene_;
+        
+        QTimer *glTimer_;
 
-        cv::Mat cameraMatrix_, distCoeffs_;
-        bool isCalibrated_ = false;
+        GLuint bgTex_ = 0;
+        Eigen::Matrix4f pose_ = Eigen::Matrix4f::Identity();
     };
 
-
-
 }
-
-
 
 #endif

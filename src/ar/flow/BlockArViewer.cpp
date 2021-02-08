@@ -20,20 +20,34 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-
-#include <flow/flow.h>
-#include <mico/ar/flow/BlockArucoCoordinates.h>
 #include <mico/ar/flow/BlockArViewer.h>
+#include <flow/Outpipe.h>
+#include <flow/Policy.h>
 
-using namespace mico;
-using namespace flow;
+#include <opencv2/opencv.hpp>
+#include <Eigen/Eigen>
 
-extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){
-    flow::PluginNodeCreator *creator = new flow::PluginNodeCreator;
+namespace mico{
+        BlockArViewer::BlockArViewer(){
+            widget_ = new VisualizerGlWidget();
 
-    // Functions
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockArucoCoordinates>>(); }, "AR");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockArViewer>>(); }, "AR");
+            createPolicy({  flow::makeInput<Eigen::Matrix4f>("coordinates"),
+                            flow::makeInput<Eigen::Matrix4f>("image") });
 
-    return creator;
+            registerCallback({ "coordinates" },
+                [&](flow::DataFlow _data) {
+                    Eigen::Matrix4f coordinates = _data.get<Eigen::Matrix4f>("coordinates").inverse();
+                    cv::Mat image = _data.get<cv::Mat>("image");
+                    std::cout << coordinates << std::endl;
+                    widget_->updatePose(coordinates);
+                    widget_->updateBackgroundImage(image);
+                }
+            );
+
+            widget_->show();
+        }
+        
+        BlockArViewer::~BlockArViewer() {
+            delete widget_;
+        }
 }

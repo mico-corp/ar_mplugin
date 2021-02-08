@@ -21,19 +21,32 @@
 
 
 
-#include <flow/flow.h>
-#include <mico/ar/flow/BlockArucoCoordinates.h>
-#include <mico/ar/flow/BlockArViewer.h>
+#ifndef MICO_AR_FLOW_BLOCKARVIEWER_H_
+#define MICO_AR_FLOW_BLOCKARVIEWER_H_
 
-using namespace mico;
-using namespace flow;
+#include <flow/Block.h>
+#include <mico/ar/gl_helpers/VisualizerGlWidget.h>
 
-extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){
-    flow::PluginNodeCreator *creator = new flow::PluginNodeCreator;
+namespace mico{
 
-    // Functions
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockArucoCoordinates>>(); }, "AR");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockArViewer>>(); }, "AR");
+    class BlockArViewer:public flow::Block{
+    public:
+        virtual std::string name() const override {return "Block AR viewer";}        
+        
+        BlockArViewer();
+        ~BlockArViewer();
 
-    return creator;
+        std::string description() const override {return    "Block AR viewer"
+                                                            "   - \n";};
+
+    private:
+        VisualizerGlWidget* widget_;
+    };
+
+
+
 }
+
+
+
+#endif

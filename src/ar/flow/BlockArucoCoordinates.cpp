@@ -27,41 +27,97 @@
 #include <opencv2/opencv.hpp>
 #include <Eigen/Eigen>
 
+#include <opencv2/aruco.hpp>
+
 namespace mico{
         BlockArucoCoordinates::BlockArucoCoordinates(){
-            createPipe<cv::Mat>("image");
+            dictionary_ = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);;
 
-            createPolicy({  flow::makeInput<Eigen::Matrix4f>("coordinates") });
+            createPipe<Eigen::Matrix4f>("coordinates");
+            createPipe<cv::Mat>("output_image");
+
+            createPolicy({  flow::makeInput<cv::Mat>("image") });
 
             registerCallback({"image"}, 
                 [&](flow::DataFlow _data){
                     auto image = _data.get<cv::Mat>("image");
+
                     Eigen::Matrix4f coordinates = Eigen::Matrix4f::Identity();
-                    if(getPipe("coordinates")->registrations()){
+
+                    std::vector<int> ids;
+                    std::vector<std::vector<cv::Point2f>> corners;
+                    cv::aruco::detectMarkers(image, dictionary_, corners, ids);
+                    // if at least one marker detected
+                    if (ids.size() > 0) {
+                        cv::aruco::drawDetectedMarkers(image, corners, ids);
+
+                        if (isCalibrated_) {
+                            std::vector<cv::Vec3d> rvecs, tvecs;
+                            cv::aruco::estimatePoseSingleMarkers(corners, 0.05, cameraMatrix_, distCoeffs_, rvecs, tvecs);
+
+                            // draw axis for each marker
+                            for (int id = 0; id < ids.size(); id++) {
+                                cv::aruco::drawAxis(image, cameraMatrix_, distCoeffs_, rvecs[id], tvecs[id], 0.1);
+
+                                if (ids[id] == id_) { // use as coordinate system
+                                    cv::Mat R;
+                                    cv::Rodrigues(rvecs[id],R);
+                                    for (unsigned i = 0; i < 3; i++) {
+                                        for (unsigned j = 0; j < 3; j++) {
+                                            coordinates(i, j) = R.at<double>(i, j);
+                                        }
+                                        coordinates(i, 3) = tvecs[id](i);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (isCalibrated_ && getPipe("coordinates")->registrations()) {
                         getPipe("coordinates")->flush(coordinates);
+                    }
+                    if (getPipe("output_image")->registrations()) {
+                        getPipe("output_image")->flush(image);
                     }
                 }
             );
 
-            
-            registerCallback({"input"}, 
-                [&](flow::DataFlow _data){
-                    auto u_ = _data.get<float>("input");
-                }
-            );
         }
 
         bool BlockArucoCoordinates::configure(std::vector<flow::ConfigParameterDef> _params) {
-            if(auto param = getParamByName(_params, "id"); param){
+            if (auto param = getParamByName(_params, "id"); param) {
                 id_ = param.value().asInteger();
             }
 
-            return true;
+            if (auto param = getParamByName(_params, "calibration_file"); param) {
+                std::string paramFile = param.value().asString();
+                
+                cv::FileStorage fs;
+                try {
+                    fs.open(paramFile, cv::FileStorage::READ);
+                }
+                catch (cv::Exception& e) {
+                    return false;
+                }
+                
+                if (fs.isOpened()) {
+                    fs["Matrix"] >> cameraMatrix_;
+                    fs["DistCoeffs"] >> distCoeffs_;
+                
+                    isCalibrated_ = true;
+                }
+                else {
+                    isCalibrated_ = false;
+                }
+            }
+
+            return isCalibrated_;
         }
         
         std::vector<flow::ConfigParameterDef> BlockArucoCoordinates::parameters(){
             return {
-                {"id", flow::ConfigParameterDef::eParameterType::INTEGER, 1}
+                {"id", flow::ConfigParameterDef::eParameterType::INTEGER, 1},
+                {"calibration_file", flow::ConfigParameterDef::eParameterType::STRING, std::string("")}
             };
         }
 

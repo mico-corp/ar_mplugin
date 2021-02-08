@@ -55,18 +55,8 @@ namespace mico{
     }
 
     void VisualizerGlWidget::updateBackgroundImage(const cv::Mat &_image) {
-        unsigned int texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        // set the texture wrapping/filtering options (on the currently bound texture object)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // load and generate the texture
         if (_image.rows) {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _image.cols, _image.rows, 0, GL_RGB, GL_UNSIGNED_BYTE, _image.data);
-            glGenerateMipmap(GL_TEXTURE_2D);
+            currentBg_ = _image;
         };
     }
 
@@ -82,10 +72,9 @@ namespace mico{
     }
     
     void VisualizerGlWidget::paintGL(){
-        drawBackground();
-
         scene_.moveCamera(pose_);
-
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
+        drawBackground();
         scene_.displayAll();
         
     }
@@ -130,7 +119,7 @@ namespace mico{
 
     void VisualizerGlWidget::drawBackground() {
 
-        if (bgTex_ != 0) {
+        if (currentBg_.rows) {
             // Save previous matrix information
             glMatrixMode(GL_PROJECTION);
             glPushMatrix();
@@ -140,15 +129,37 @@ namespace mico{
             glPushMatrix();
             glLoadIdentity();
 
+            // Load image
+            GLuint bgTex;
+            glGenTextures(1, &bgTex);
+            glBindTexture(GL_TEXTURE_2D, bgTex);
+            // set the texture wrapping/filtering options (on the currently bound texture object)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            // load and generate the texture
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_BGR, currentBg_.cols, currentBg_.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, currentBg_.data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+
+            //
+            glColor4f(1.0, 1.0, 1.0, 0.5);
+
             // Draw background
-            glBindTexture(GL_TEXTURE_2D, bgTex_);
-            glColor3f(1.0, 1.0, 1.0);
+            glDisable(GL_DEPTH_TEST);
+            glDisable(GL_LIGHTING);
+            glBindTexture(GL_TEXTURE_2D, bgTex);
+            glEnable(GL_TEXTURE_2D);
             glBegin(GL_QUADS);
-            glTexCoord2f(0.0, 1.0); glTexCoord2f(0.05, 0.05);
-            glTexCoord2f(1.0, 1.0); glTexCoord2f(0.3, 0.05);
-            glTexCoord2f(1.0, 0.0); glTexCoord2f(0.3, 0.15);
-            glTexCoord2f(0.0, 0.0); glTexCoord2f(0.05, 0.15);
+            glTexCoord2f(0.0, 1.0); glVertex2f(0.00, 0.00);
+            glTexCoord2f(1.0, 1.0); glVertex2f(1.0, 0.00);
+            glTexCoord2f(1.0, 0.0); glVertex2f(1.0, 1.0);
+            glTexCoord2f(0.0, 0.0); glVertex2f(0.00, 1.0);
             glEnd();
+
+            glDisable(GL_TEXTURE_2D);;
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_LIGHTING);
 
             // Recover previous matrix infromation.
             glMatrixMode(GL_PROJECTION);

@@ -41,6 +41,7 @@ namespace mico{
 
     private:
         VisualizerGlWidget* widget_;
+        bool idle_ = true;
     };
 
 

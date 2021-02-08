@@ -23,6 +23,8 @@
 #ifndef MICO_AR_GLHELPERS_VISUALIZERGLWIDGET_H_
 #define MICO_AR_GLHELPERS_VISUALIZERGLWIDGET_H_
 
+#include <mico/ar/gl_helpers/Scene3d.h>
+
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
@@ -32,7 +34,6 @@
 
 #include <mutex>
 
-#include <mico/ar/gl_helpers/Scene3d.h>
 #include <Eigen/Eigen>
 
 #include <opencv2/opencv.hpp>
@@ -83,8 +84,8 @@ namespace mico{
         
         QTimer *glTimer_;
 
-        GLuint bgTex_ = 0;
         Eigen::Matrix4f pose_ = Eigen::Matrix4f::Identity();
+        cv::Mat currentBg_;
     };
 
 }

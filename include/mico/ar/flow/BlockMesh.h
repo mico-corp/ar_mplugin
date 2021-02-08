@@ -20,74 +20,40 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#ifndef MICO_AR_GLHELPERS_VISUALIZERGLWIDGET_H_
-#define MICO_AR_GLHELPERS_VISUALIZERGLWIDGET_H_
 
+#ifndef MICO_AR_FLOW_BLOCKMESH_H_
+#define MICO_AR_FLOW_BLOCKMESH_H_
+
+#include <flow/Block.h>
+#include <mico/ar/gl_helpers/VisualizerGlWidget.h>
 #include <mico/ar/gl_helpers/Scene3d.h>
-
-#include <QOpenGLWidget>
-#include <QOpenGLFunctions>
-#include <QOpenGLVertexArrayObject>
-#include <QOpenGLBuffer>
-#include <QWheelEvent>
-#include <QTimer>
-
-#include <mutex>
-
-#include <Eigen/Eigen>
-
-#include <opencv2/opencv.hpp>
-
-#ifndef M_PI
-# define M_PI 3.14159265359 
-#endif
-
+#include <mico/ar/gl_helpers/Mesh.h>
 
 namespace mico{
 
-    /// QT widget to visualize in OpenGL the trajectory, map and any 3d information required
-    /// @ingroup app_anita_gui
-    class VisualizerGlWidget: public QOpenGLWidget, protected QOpenGLFunctions {
-        Q_OBJECT
+    class BlockMesh:public flow::Block{
     public:
-        explicit VisualizerGlWidget(QWidget *_parent = 0);
-        ~VisualizerGlWidget();
-
-        void addPoint(Scene3d::Point _p);
-        void addLine(Scene3d::Point _p1, Scene3d::Point _p2);
+        virtual std::string name() const override {return "Block Mesh";}        
         
-        void updatePose(Eigen::Matrix4f _pose);
+        BlockMesh();
 
-        void clearAll();
-
-        void updateBackgroundImage(const cv::Mat& _image);
-
-    public slots:
-        void cleanup();
-
-    protected:
-        void initializeGL() override;
-        void paintGL() override;
-        void resizeGL(int width, int height) override;
-
-        void keyReleaseEvent(QKeyEvent *event) override;
-        void keyPressEvent(QKeyEvent *event) override;
-        void mousePressEvent(QMouseEvent *event) override;
-        void mouseReleaseEvent(QMouseEvent *event) override;
-        void mouseMoveEvent(QMouseEvent *event) override;
-        void wheelEvent(QWheelEvent *event) override;
-    
-        void drawBackground();
+        virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
+        std::vector<flow::ConfigParameterDef> parameters() override;
+        
+        std::string description() const override {return    "Bloc kMesh"
+                                                            "   - \n";};
 
     private:
-        Scene3d *scene_;
-        
-        QTimer *glTimer_;
+        Scene3d * scene_;
+        std::shared_ptr<Mesh> mesh_;
 
-        Eigen::Matrix4f pose_ = Eigen::Matrix4f::Identity();
-        cv::Mat currentBg_;
+        bool idle_ = true;
     };
 
+
+
 }
+
+
 
 #endif

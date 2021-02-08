@@ -24,6 +24,7 @@
 #include <flow/flow.h>
 #include <mico/ar/flow/BlockArucoCoordinates.h>
 #include <mico/ar/flow/BlockArViewer.h>
+#include <mico/ar/flow/BlockMesh.h>
 
 using namespace mico;
 using namespace flow;
@@ -34,6 +35,7 @@ extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){
     // Functions
     creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockArucoCoordinates>>(); }, "AR");
     creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockArViewer>>(); }, "AR");
+    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockMesh>>(); }, "AR");
 
     return creator;
 }

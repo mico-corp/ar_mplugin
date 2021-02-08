@@ -26,11 +26,14 @@
 namespace mico{
 
     VisualizerGlWidget::VisualizerGlWidget(QWidget *_parent){
+        scene_ = Scene3d::get();
+
         this->setFocusPolicy(Qt::StrongFocus);
         this->setMinimumWidth(200);
         this->setMinimumHeight(200);
 
-        scene_.addAxis(Eigen::Matrix4f::Identity());    /// origin
+        scene_->addAxis(Eigen::Matrix4f::Identity());    /// origin
+        scene_->setCameraFov(52.89427375452187); // 666 hardcoded 
     }
     
     VisualizerGlWidget::~VisualizerGlWidget(){
@@ -47,7 +50,7 @@ namespace mico{
     }
 
     void VisualizerGlWidget::addLine(mico::Scene3d::Point _p1, mico::Scene3d::Point _p2){
-        scene_.addLine(_p1, _p2);
+        scene_->addLine(_p1, _p2);
     }
 
     void VisualizerGlWidget::clearAll(){
@@ -57,6 +60,7 @@ namespace mico{
     void VisualizerGlWidget::updateBackgroundImage(const cv::Mat &_image) {
         if (_image.rows) {
             cv::cvtColor(_image, currentBg_, cv::COLOR_RGB2BGR);
+            cv::flip(currentBg_, currentBg_, 1);
         };
     }
 
@@ -64,7 +68,6 @@ namespace mico{
         connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &VisualizerGlWidget::cleanup);
 
         initializeOpenGLFunctions();
-        scene_.init(false);
 
         glTimer_ = new QTimer(this);
         connect(glTimer_, SIGNAL(timeout()), this, SLOT(update()));
@@ -72,9 +75,10 @@ namespace mico{
     }
     
     void VisualizerGlWidget::paintGL(){
-        scene_.moveCamera(pose_);
-        scene_.displayAll();
+        scene_->moveCamera(pose_);
+        scene_->displayAll();
         drawBackground();
+
         
     }
     
@@ -83,7 +87,7 @@ namespace mico{
         if (_height == 0)
             _height = 1; // To prevent divide by 0
 
-        scene_.resizeGL(_width, _height);
+        scene_->resizeGL(_width, _height);
     }
     
 

@@ -49,7 +49,15 @@ namespace mico{
         };
 
     public:
-        bool init(bool _initGlut = true);
+
+        static Scene3d* get() {
+            if (currentInstance_ == nullptr) {
+                currentInstance_ = new Scene3d();
+                currentInstance_->init();
+            }
+            return currentInstance_;
+        }
+
 
         void stop();
 
@@ -75,7 +83,14 @@ namespace mico{
 
         void resizeGL(int _width, int _height);
 
+        void setCameraFov(float _fov);
+
+        void flip() { flip_ = !flip_; };
+
     private:
+        Scene3d() {};
+        bool init();
+
         void setMaterial(   std::vector<float> _ambient = {0.7f, 0.7f, 0.7f, 1.0f}, 
                             std::vector<float> _diffuse = {1.0f, 1.0f, 1.0f, 1.0f}, 
                             std::vector<float> _specular = {1.0f, 1.0f, 1.0f, 1.0f}, 
@@ -94,10 +109,6 @@ namespace mico{
         static Scene3d* currentInstance_;
         static GLfloat currentAspect_;
         
-        static void keyboardCallback(unsigned char _key, int _x, int _y);
-        static void displayStatic();
-        static void timer(int value);
-        static void reshape(GLsizei width, GLsizei height);
     private:
         /* Global variables */
         std::string title_ = "3D Shapes with animation";
@@ -116,6 +127,10 @@ namespace mico{
         static std::vector<std::function<void(unsigned char, int, int)>> keyboardCallbacks_;
 
         bool useGlut_ = false;
+
+        float fov_ = 45.0f;
+
+        bool flip_ = false;
 
     private:
 

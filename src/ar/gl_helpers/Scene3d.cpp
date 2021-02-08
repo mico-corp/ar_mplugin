@@ -27,26 +27,10 @@ namespace mico{
     GLfloat Scene3d::currentAspect_=1;
     std::vector<std::function<void(unsigned char, int, int)>> Scene3d::keyboardCallbacks_ = {};
 
-    bool Scene3d::init(bool _initGlut){
+    bool Scene3d::init(){
 
-        if(_initGlut){
-            if(currentInstance_ != nullptr)
-                return false;
-
-            currentInstance_ = this;
-            int argc = 0;
-            char ** argv = nullptr;
-            glutInit(&argc, argv);            // Initialize GLUT
-            glutInitDisplayMode(GLUT_DOUBLE); // Enable double buffered mode
-            glutInitWindowSize(640, 480);     // Set the window's initial width & height
-            glutInitWindowPosition(50, 50);   // Position the window's initial top-left corner
-            glutCreateWindow(title_.c_str());          // Create window with the given title
-            glutKeyboardFunc(&Scene3d::keyboardCallback); 
-
-            glutDisplayFunc(&Scene3d::displayStatic);         // Register callback handler for window re-paint event
-            glutReshapeFunc(&Scene3d::reshape);         // Register callback handler for window re-size event
-            useGlut_ = true;
-        }
+        if (currentInstance_ != nullptr)
+            return false;
 
         glClearColor(0.3f, 0.3f, 0.3f, 3.0f);              // Set background color to black and opaque
         glClearDepth(1.0f);                                // Set background depth to farthest
@@ -65,11 +49,6 @@ namespace mico{
 
         glShadeModel (GL_SMOOTH);
 
-
-        if(useGlut_){
-            glutTimerFunc(0, &Scene3d::timer, 0);       // First timer call immediately [NEW]
-        }
-        
         return true;
     }
 
@@ -130,7 +109,7 @@ namespace mico{
         // Place camera
         glMatrixMode(GL_PROJECTION); // To operate on the Projection matrix
         glLoadIdentity();            // Reset
-        gluPerspective(45.0f, currentAspect_, 0.1f, 100.0f);
+        gluPerspective(fov_, currentAspect_, 0.1f, 100.0f);
         gluLookAt(	cameraPose_(0,3),
                     cameraPose_(1,3),
                     cameraPose_(2,3),
@@ -185,6 +164,12 @@ namespace mico{
 
     void Scene3d::resizeGL(int _width, int _height){
         currentAspect_ = (float)_width / (float)_height;
+        glViewport(_width, _height, 0, 0);
+    }
+
+
+    void Scene3d::setCameraFov(float _fov) {
+        fov_ = _fov;
     }
 
 
@@ -319,42 +304,6 @@ namespace mico{
         *blue  = (color[idx2][2] - color[idx1][2])*fractBetween + color[idx1][2];
         
         return true;
-    }
-
-    //---------------------------------------------------------------------------------------
-    void Scene3d::displayStatic(){
-        currentInstance_->displayAll();
-    }
-
-
-
-    void Scene3d::timer(int value) {
-        glutPostRedisplay();                   // Post re-paint request to activate display()
-        glutTimerFunc(/*refreshMills*/15, timer, 0); // next timer call milliseconds later
-    }
-
-    void Scene3d::reshape(GLsizei width, GLsizei height) { // GLsizei for non-negative integer
-        // Compute aspect ratio of the new window
-        if (height == 0)
-            height = 1; // To prevent divide by 0
-
-        currentAspect_ = (GLfloat)width / (GLfloat)height;
-
-        // Set the viewport to cover the new window
-        glViewport(0, 0, width, height);
-
-        // Set the aspect ratio of the clipping volume to match the viewport
-        glMatrixMode(GL_PROJECTION); // To operate on the Projection matrix
-        glLoadIdentity();            // Reset
-        // Enable perspective projection with fovy, aspect, zNear and zFar
-        gluPerspective(45.0f, currentAspect_, 0.1f, 100.0f);
-    }
-
-
-    void Scene3d::keyboardCallback(unsigned char _key, int _x, int _y){
-        for(auto &fn:keyboardCallbacks_){
-            fn(_key, _x, _y);
-        }
     }
 
 }

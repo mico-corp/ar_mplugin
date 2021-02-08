@@ -40,7 +40,9 @@ namespace mico{
 
             registerCallback({"image"}, 
                 [&](flow::DataFlow _data){
-                    auto image = _data.get<cv::Mat>("image");
+                    auto image = _data.get<cv::Mat>("image").clone();
+                    //cv::flip(image, image, 0);
+                    cv::rotate(image, image, cv::ROTATE_180);
 
                     Eigen::Matrix4f coordinates = Eigen::Matrix4f::Identity();
 
@@ -57,7 +59,7 @@ namespace mico{
 
                             // draw axis for each marker
                             for (int id = 0; id < ids.size(); id++) {
-                                cv::aruco::drawAxis(image, cameraMatrix_, distCoeffs_, rvecs[id], tvecs[id], 0.1);
+                                //cv::aruco::drawAxis(image, cameraMatrix_, distCoeffs_, rvecs[id], tvecs[id], 0.1);
 
                                 if (ids[id] == id_) { // use as coordinate system
                                     cv::Mat R;

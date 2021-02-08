@@ -20,74 +20,48 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#ifndef MICO_AR_GLHELPERS_VISUALIZERGLWIDGET_H_
-#define MICO_AR_GLHELPERS_VISUALIZERGLWIDGET_H_
-
-#include <mico/ar/gl_helpers/Scene3d.h>
-
-#include <QOpenGLWidget>
-#include <QOpenGLFunctions>
-#include <QOpenGLVertexArrayObject>
-#include <QOpenGLBuffer>
-#include <QWheelEvent>
-#include <QTimer>
-
-#include <mutex>
-
-#include <Eigen/Eigen>
+#include <mico/ar/flow/BlockMesh.h>
+#include <flow/Outpipe.h>
+#include <flow/Policy.h>
 
 #include <opencv2/opencv.hpp>
-
-#ifndef M_PI
-# define M_PI 3.14159265359 
-#endif
-
+#include <Eigen/Eigen>
 
 namespace mico{
+        BlockMesh::BlockMesh(){
+            scene_ = Scene3d::get();
 
-    /// QT widget to visualize in OpenGL the trajectory, map and any 3d information required
-    /// @ingroup app_anita_gui
-    class VisualizerGlWidget: public QOpenGLWidget, protected QOpenGLFunctions {
-        Q_OBJECT
-    public:
-        explicit VisualizerGlWidget(QWidget *_parent = 0);
-        ~VisualizerGlWidget();
+            createPolicy({  flow::makeInput<Eigen::Matrix4f>("coordinates")});
 
-        void addPoint(Scene3d::Point _p);
-        void addLine(Scene3d::Point _p1, Scene3d::Point _p2);
+            registerCallback({ "coordinates" },
+                [&](flow::DataFlow _data) {
+                    if (!idle_) return;
+                    
+                    idle_ = false;
+                    Eigen::Matrix4f coordinates = _data.get<Eigen::Matrix4f>("coordinates");
+                    mesh_->transform(coordinates);
+                    idle_ = true;
+                }
+            );
+
+        }
         
-        void updatePose(Eigen::Matrix4f _pose);
-
-        void clearAll();
-
-        void updateBackgroundImage(const cv::Mat& _image);
-
-    public slots:
-        void cleanup();
-
-    protected:
-        void initializeGL() override;
-        void paintGL() override;
-        void resizeGL(int width, int height) override;
-
-        void keyReleaseEvent(QKeyEvent *event) override;
-        void keyPressEvent(QKeyEvent *event) override;
-        void mousePressEvent(QMouseEvent *event) override;
-        void mouseReleaseEvent(QMouseEvent *event) override;
-        void mouseMoveEvent(QMouseEvent *event) override;
-        void wheelEvent(QWheelEvent *event) override;
-    
-        void drawBackground();
-
-    private:
-        Scene3d *scene_;
         
-        QTimer *glTimer_;
-
-        Eigen::Matrix4f pose_ = Eigen::Matrix4f::Identity();
-        cv::Mat currentBg_;
-    };
+        bool BlockMesh::configure(std::vector<flow::ConfigParameterDef> _params) {
+            if (auto param = getParamByName(_params, "mesh_path"); param) {
+                mesh_ = std::make_shared<Mesh>();
+                if (mesh_->loadMesh(param.value().asString())) {
+                    scene_->addMesh(mesh_);
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        std::vector<flow::ConfigParameterDef> BlockMesh::parameters(){
+            return {
+                {"mesh_path", flow::ConfigParameterDef::eParameterType::STRING, std::string("")}
+            };
+        }
 
 }
-
-#endif

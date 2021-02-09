@@ -41,7 +41,7 @@ namespace mico{
                     idle_ = false;
                     Eigen::Matrix4f coordinates = _data.get<Eigen::Matrix4f>("coordinates").inverse();
                     cv::Mat image = _data.get<cv::Mat>("image");
-                    std::cout << coordinates << std::endl;
+                    //std::cout << coordinates << std::endl;
                     widget_->updatePose(coordinates);
                     widget_->updateBackgroundImage(image);
                     idle_ = true;

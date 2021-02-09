@@ -39,7 +39,7 @@ namespace mico{
                     if (!idle_) return;
                     
                     idle_ = false;
-                    Eigen::Matrix4f coordinates = _data.get<Eigen::Matrix4f>("coordinates").inverse();
+                    Eigen::Matrix4f coordinates = _data.get<Eigen::Matrix4f>("coordinates");
                     cv::Mat image = _data.get<cv::Mat>("image");
                     //std::cout << coordinates << std::endl;
                     widget_->updatePose(coordinates);

@@ -44,7 +44,6 @@ namespace mico{
                     //cv::flip(image, image, 0);
                     cv::rotate(image, image, cv::ROTATE_180);
 
-                    Eigen::Matrix4f coordinates = Eigen::Matrix4f::Identity();
 
                     std::vector<int> ids;
                     std::vector<std::vector<cv::Point2f>> corners;
@@ -64,20 +63,23 @@ namespace mico{
                                 if (ids[id] == id_) { // use as coordinate system
                                     cv::Mat R;
                                     cv::Rodrigues(rvecs[id],R);
+
+                                    Eigen::Matrix4f coordinates = Eigen::Matrix4f::Identity();
                                     for (unsigned i = 0; i < 3; i++) {
                                         for (unsigned j = 0; j < 3; j++) {
                                             coordinates(i, j) = R.at<double>(i, j);
                                         }
                                         coordinates(i, 3) = tvecs[id](i);
                                     }
+                                    if (getPipe("coordinates")->registrations()) {
+                                        getPipe("coordinates")->flush(coordinates);
+                                    }
                                 }
                             }
                         }
                     }
 
-                    if (isCalibrated_ && getPipe("coordinates")->registrations()) {
-                        getPipe("coordinates")->flush(coordinates);
-                    }
+                    
                     if (getPipe("output_image")->registrations()) {
                         getPipe("output_image")->flush(image);
                     }

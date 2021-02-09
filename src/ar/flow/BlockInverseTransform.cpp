@@ -20,28 +20,35 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-
-#include <flow/flow.h>
-#include <mico/ar/flow/BlockArucoCoordinates.h>
-#include <mico/ar/flow/BlockArViewer.h>
-#include <mico/ar/flow/BlockMesh.h>
-#include <mico/ar/flow/BlockPoseGenerator.h>
-#include <mico/ar/flow/BlockMultiplyTransform.h>
 #include <mico/ar/flow/BlockInverseTransform.h>
+#include <flow/Outpipe.h>
+#include <flow/Policy.h>
 
-using namespace mico;
-using namespace flow;
+#include <opencv2/opencv.hpp>
+#include <Eigen/Eigen>
 
-extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){
-    flow::PluginNodeCreator *creator = new flow::PluginNodeCreator;
+#include <opencv2/aruco.hpp>
 
-    // Functions
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockArucoCoordinates>>(); },    "AR");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockArViewer>>(); },            "AR");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockMesh>>(); },                "AR");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockPoseGenerator>>(); },       "AR");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockMultiplyTransform>>(); },   "AR");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockInverseTransform>>(); },   "AR");
+namespace mico{
+    BlockInverseTransform::BlockInverseTransform(){
+        createPipe<Eigen::Matrix4f>("Inverse");
 
-    return creator;
+        createPolicy({  flow::makeInput<Eigen::Matrix4f>("T") });
+
+        registerCallback({"T"}, 
+            [&](flow::DataFlow _data){
+                if (!idle_) return;
+                idle_ = false;
+
+                auto T = _data.get<Eigen::Matrix4f>("T");
+                if (getPipe("Inverse")->registrations()) {
+                    Eigen::Matrix4f inv = T.inverse().eval();
+                    getPipe("Inverse")->flush(inv);
+                }
+                            
+                idle_ = true;
+            }
+        );
+
+    }
 }

@@ -39,7 +39,9 @@ namespace mico{
                     
                     idle_ = false;
                     Eigen::Matrix4f coordinates = _data.get<Eigen::Matrix4f>("coordinates");
-                    mesh_->transform(coordinates);
+                    if(mesh_){
+                        mesh_->transform(coordinates);
+                    }
                     idle_ = true;
                 }
             );

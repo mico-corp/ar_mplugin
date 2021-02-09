@@ -40,8 +40,14 @@ namespace mico{
 
             registerCallback({"image"}, 
                 [&](flow::DataFlow _data){
+                    if(!idle_) return;
+                    idle_ = false;
                     auto image = _data.get<cv::Mat>("image").clone();
-                    //cv::flip(image, image, 0);
+                    if(!image.rows){
+                        idle_ = true;
+                        return ;
+                    } 
+
                     cv::rotate(image, image, cv::ROTATE_180);
 
 
@@ -83,6 +89,8 @@ namespace mico{
                     if (getPipe("output_image")->registrations()) {
                         getPipe("output_image")->flush(image);
                     }
+
+                    idle_ = true;
                 }
             );
 

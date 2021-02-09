@@ -53,6 +53,7 @@ namespace mico{
 
         cv::Mat cameraMatrix_, distCoeffs_;
         bool isCalibrated_ = false;
+        bool idle_ = true;
     };
 
 

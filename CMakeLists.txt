@@ -68,9 +68,11 @@ if(WIN32)
 	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES "${MICO_ROOT_DIR}/dependencies/lib/Release/x64/glew32.lib")
 	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES "${MICO_ROOT_DIR}/dependencies/lib/Release/x64/glew32.lib")
 	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES "${MICO_ROOT_DIR}/dependencies/lib/Release/x64/glew32s.lib")
-elseif(linux)
+elseif(UNIX)
 	find_package(GLUT REQUIRED)
-	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES GL glut GLU GLEW)
+	find_package(OpenGL REQUIRED)
+	mplugin_include_directory( PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_INCLUDES ${GLUT_INCLUDE_DIR})
+	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES GL glut GLU GLEW ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
 endif()
 
 

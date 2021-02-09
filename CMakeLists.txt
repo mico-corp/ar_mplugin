@@ -1,5 +1,5 @@
 ##---------------------------------------------------------------------------------------------------------------------
-##  MICO math wrapper plugin
+##  MICO ar wrapper plugin
 ##---------------------------------------------------------------------------------------------------------------------
 ##  Copyright 2020 Pablo Ramon Soria (a.k.a. Bardo91) pabramsor@gmail.com
 ##---------------------------------------------------------------------------------------------------------------------
@@ -60,14 +60,16 @@ mplugin_link_library( PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES ${OpenCV_LIBS}
 mplugin_compile_definition( PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_DEFINITIONS HAS_OPENCV)
 
 
-find_package(FreeGLUT REQUIRED)
-mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES FreeGLUT::freeglut)
 
 if(WIN32)
+	find_package(FreeGLUT REQUIRED)
+	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES FreeGLUT::freeglut)
+
 	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES "${MICO_ROOT_DIR}/dependencies/lib/Release/x64/glew32.lib")
 	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES "${MICO_ROOT_DIR}/dependencies/lib/Release/x64/glew32.lib")
 	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES "${MICO_ROOT_DIR}/dependencies/lib/Release/x64/glew32s.lib")
 elseif(linux)
+	find_package(GLUT REQUIRED)
 	mplugin_link_library(PLUGIN_NAME ${PLUGIN_NAME} PLUGIN_LIBRARIES GL glut GLU GLEW)
 endif()
 

@@ -1,40 +1,23 @@
-#---------------------------------------------------------------------------------------------------------------------
-#  Vertical Engineering Solutions
-#---------------------------------------------------------------------------------------------------------------------
-# 
-#  Copyright 2020 Vertical Engineering Solutions  - All Rights Reserved
-# 
-#  Unauthorized copying of this file, via any medium is strictly prohibited Proprietary and confidential.
-# 
-#  All information contained herein is, and remains the property of Vertical Engineering Solutions.  The 
-#  intellectual and technical concepts contained herein are proprietary to Vertical Engineering Solutions 
-#  and its suppliers and may be covered by UE and Foreign Patents, patents in process, and are protected 
-#  by trade secret or copyright law. Dissemination of this information or reproduction of this material is 
-#  strictly forbidden unless prior written permission is obtained from Vertical Engineering Solutions.
-#
-#---------------------------------------------------------------------------------------------------------------------
-#
-#  Maintainer: pramon@vengineerings.com
-#
-#---------------------------------------------------------------------------------------------------------------------
-
-
-file(GLOB_RECURSE AEROXSUITE_INSPECTIONSOFTWARE_HDR "include/inspection_software/*.h" "include/inspection_software/*.inl")
-file(GLOB_RECURSE AEROXSUITE_INSPECTIONSOFTWARE_SRC "src/inspection_software/*.cpp")
-
-add_library(inspection_software_lib STATIC ${AEROXSUITE_INSPECTIONSOFTWARE_SRC} ${AEROXSUITE_INSPECTIONSOFTWARE_HDR})
-target_link_libraries(inspection_software_lib LINK_PUBLIC aerox_suite aerox_vision)
-target_include_directories(inspection_software_lib
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-set_target_properties(inspection_software_lib PROPERTIES CXX_STANDARD 17)
-
-# Add boost
-find_package(Boost 1.66 REQUIRED program_options HINTS /usr/local)
-
-
+##---------------------------------------------------------------------------------------------------------------------
+##  MICO ar wrapper plugin
+##---------------------------------------------------------------------------------------------------------------------
+##  Copyright 2020 Pablo Ramon Soria (a.k.a. Bardo91) pabramsor@gmail.com
+##---------------------------------------------------------------------------------------------------------------------
+##  Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+##  and associated documentation files (the "Software"), to deal in the Software without restriction,
+##  including without limitation the rights to use, copy, modify, merge, publish, distribute,
+##  sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+##  furnished to do so, subject to the following conditions:
+##
+##  The above copyright notice and this permission notice shall be included in all copies or substantial
+##  portions of the Software.
+##
+##  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+##  BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+##  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+##  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+##  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+##---------------------------------------------------------------------------------------------------------------------
 
 ##############################################################################
 ##                                                                          ##

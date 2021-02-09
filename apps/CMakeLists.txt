@@ -33,4 +33,4 @@ find_package(OpenCV REQUIRED COMPONENTS core highgui features2d tracking)
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
 
 target_include_directories(calibration_app PUBLIC ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(calibration_app LINK_PUBLIC ${OpenCV_LIBS})
+target_link_libraries(calibration_app LINK_PUBLIC ${OpenCV_LIBS} pthread)

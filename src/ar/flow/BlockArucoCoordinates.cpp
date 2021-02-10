@@ -34,6 +34,7 @@ namespace mico{
             dictionary_ = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);;
 
             createPipe<Eigen::Matrix4f>("coordinates");
+            createPipe<std::map<int, Eigen::Matrix4f>>("all_coordinates");
             createPipe<cv::Mat>("output_image");
 
             createPolicy({  flow::makeInput<cv::Mat>("image") });
@@ -62,13 +63,13 @@ namespace mico{
                             std::vector<cv::Vec3d> rvecs, tvecs;
                             cv::aruco::estimatePoseSingleMarkers(corners, 0.05, cameraMatrix_, distCoeffs_, rvecs, tvecs);
 
-                            // draw axis for each marker
-                            for (int id = 0; id < ids.size(); id++) {
-                                //cv::aruco::drawAxis(image, cameraMatrix_, distCoeffs_, rvecs[id], tvecs[id], 0.1);
 
-                                if (ids[id] == id_) { // use as coordinate system
+                            if (id_ == 0 && getPipe("all_coordinates")->registrations()) {
+                                std::map<int, Eigen::Matrix4f> all;
+                                // draw axis for each marker
+                                for (int id = 0; id < ids.size(); id++) {
                                     cv::Mat R;
-                                    cv::Rodrigues(rvecs[id],R);
+                                    cv::Rodrigues(rvecs[id], R);
 
                                     Eigen::Matrix4f coordinates = Eigen::Matrix4f::Identity();
                                     for (unsigned i = 0; i < 3; i++) {
@@ -77,11 +78,32 @@ namespace mico{
                                         }
                                         coordinates(i, 3) = tvecs[id](i);
                                     }
-                                    if (getPipe("coordinates")->registrations()) {
-                                        getPipe("coordinates")->flush(coordinates);
+                                    all[ids[id]] = coordinates;
+                                }
+                                getPipe("all_coordinates")->flush(all);
+                            }
+                            else {
+                                // draw axis for each marker
+                                for (int id = 0; id < ids.size(); id++) {
+                                    //cv::aruco::drawAxis(image, cameraMatrix_, distCoeffs_, rvecs[id], tvecs[id], 0.1);
+                                    if (ids[id] == id_) { // use as coordinate system
+                                        cv::Mat R;
+                                        cv::Rodrigues(rvecs[id],R);
+
+                                        Eigen::Matrix4f coordinates = Eigen::Matrix4f::Identity();
+                                        for (unsigned i = 0; i < 3; i++) {
+                                            for (unsigned j = 0; j < 3; j++) {
+                                                coordinates(i, j) = R.at<double>(i, j);
+                                            }
+                                            coordinates(i, 3) = tvecs[id](i);
+                                        }
+                                        if (getPipe("coordinates")->registrations()) {
+                                            getPipe("coordinates")->flush(coordinates);
+                                        }
                                     }
                                 }
                             }
+
                         }
                     }
 

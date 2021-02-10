@@ -21,29 +21,36 @@
 
 
 
-#include <flow/flow.h>
-#include <mico/ar/flow/BlockArucoCoordinates.h>
-#include <mico/ar/flow/BlockArViewer.h>
-#include <mico/ar/flow/BlockMesh.h>
-#include <mico/ar/flow/BlockPoseGenerator.h>
-#include <mico/ar/flow/BlockMultiplyTransform.h>
-#include <mico/ar/flow/BlockInverseTransform.h>
-#include <mico/ar/flow/BlockFilterAruco.h>
+#ifndef MICO_AR_FLOW_BLOCKFILTERARUCO_H_
+#define MICO_AR_FLOW_BLOCKFILTERARUCO_H_
 
-using namespace mico;
-using namespace flow;
+#include <flow/Block.h>
+#include <opencv2/opencv.hpp>
 
-extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){
-    flow::PluginNodeCreator *creator = new flow::PluginNodeCreator;
 
-    // Functions
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockArucoCoordinates>>(); },    "AR");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockArViewer>>(); },            "AR");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockMesh>>(); },                "AR");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockPoseGenerator>>(); },       "AR");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<BlockMultiplyTransform>>(); },   "AR");
-    creator->registerNodeCreator([]() { return std::make_unique<FlowVisualBlock<BlockInverseTransform>>(); }, "AR");
-    creator->registerNodeCreator([]() { return std::make_unique<FlowVisualBlock<BlockFilterAruco>>(); }, "AR");
+namespace mico{
 
-    return creator;
+    class BlockFilterAruco:public flow::Block{
+    public:
+        virtual std::string name() const override {return "Block Filter Aruco CS";}        
+        
+        BlockFilterAruco();
+
+        virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
+        std::vector<flow::ConfigParameterDef> parameters() override;
+
+        std::string description() const override {return    "Block Filter Aruco CS"
+                                                            "   - \n";};
+
+    private:
+        int id_ = 0;
+        bool idle_ = true;
+    };
+
+
+
 }
+
+
+
+#endif

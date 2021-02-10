@@ -79,7 +79,9 @@ namespace mico{
 
         void attachKeyboardfunction(std::function<void(unsigned char, int, int)> _fn);
 
-        void displayAll();
+        void clearGl();
+        void drawAll();
+        void swapBuffers();
 
         void resizeGL(int _width, int _height);
 

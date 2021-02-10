@@ -76,8 +76,10 @@ namespace mico{
     
     void VisualizerGlWidget::paintGL(){
         scene_->moveCamera(pose_);
-        scene_->displayAll();
+        scene_->clearGl();
         drawBackground();
+        scene_->drawAll();
+        scene_->swapBuffers();
 
         
     }
@@ -147,25 +149,24 @@ namespace mico{
             glGenerateMipmap(GL_TEXTURE_2D);
 
             //
-            glColor4f(1.0, 1.0, 1.0, 0.5);
+            //glColor4f(1.0, 1.0, 1.0, 0.5);
+            glColor3f(1.0, 1.0, 1.0);
 
             // Draw background
             glDisable(GL_DEPTH_TEST);
-            glDisable(GL_LIGHTING);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glBindTexture(GL_TEXTURE_2D, bgTex);
-            glEnable(GL_TEXTURE_2D);
-            glBegin(GL_QUADS);
-            glTexCoord2f(0.0, 1.0); glVertex2f(0.00, 0.00);
-            glTexCoord2f(1.0, 1.0); glVertex2f(1.0, 0.00);
-            glTexCoord2f(1.0, 0.0); glVertex2f(1.0, 1.0);
-            glTexCoord2f(0.0, 0.0); glVertex2f(0.00, 1.0);
-            glEnd();
+                glDisable(GL_LIGHTING);
+                    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    glBindTexture(GL_TEXTURE_2D, bgTex);
+                    glEnable(GL_TEXTURE_2D);
+                        glBegin(GL_QUADS);
+                        glTexCoord2f(0.0, 1.0); glVertex2f(0.00, 0.00);
+                        glTexCoord2f(1.0, 1.0); glVertex2f(1.0, 0.00);
+                        glTexCoord2f(1.0, 0.0); glVertex2f(1.0, 1.0);
+                        glTexCoord2f(0.0, 0.0); glVertex2f(0.00, 1.0);
+                        glEnd();
 
-            glDisable(GL_TEXTURE_2D);
-            glDisable(GL_BLEND);
-            glEnable(GL_LIGHTING);
+                    glDisable(GL_TEXTURE_2D);
+                glEnable(GL_LIGHTING);
             glEnable(GL_DEPTH_TEST);
 
             // Recover previous matrix infromation.

@@ -103,8 +103,16 @@ namespace mico{
         keyboardCallbacks_.push_back(_fn);
     }
 
-    void Scene3d::displayAll(){
+    void Scene3d::clearGl() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
+    }
+    
+    void Scene3d::drawAll(){
+
+        glEnable(GL_LIGHTING);
+        GLfloat light_position1[] = { -3.0, 0.0, 5.0, 0.0 };
+        glLightfv(GL_LIGHT0, GL_POSITION, light_position1);
+        glEnable(GL_LIGHT0);
 
         // Place camera
         glMatrixMode(GL_PROJECTION); // To operate on the Projection matrix
@@ -149,14 +157,15 @@ namespace mico{
         }
         glEnd ();
 
-        drawOccupancyMap();
-
         // Draw coordinates
         for(auto &[id, pose]: axis_){
             drawAxis(pose);
         }
 
-        if(useGlut_){
+    }
+
+    void Scene3d::swapBuffers() {
+        if (useGlut_) {
             glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
         }
     }

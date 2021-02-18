@@ -46,7 +46,7 @@ namespace mico{
             /// Base constructor that initializes the pipes
             BlockMultiplyTransform();
 
-            /// Returns a nrief description of the block
+            /// Returns a brief description of the block
             std::string description() const override {return    "Multiply transform"
                                                                 "   - \n";};
 

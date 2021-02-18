@@ -42,7 +42,7 @@ namespace mico{
             /// Base destructor that initializes the pipes
             ~BlockArViewer();
 
-            /// Returns a nrief description of the block
+            /// Returns a brief description of the block
             std::string description() const override {return    "Block AR viewer"
                                                                 "   - \n";};
 

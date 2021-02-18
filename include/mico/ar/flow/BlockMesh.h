@@ -47,7 +47,7 @@ namespace mico{
             /// Get list of parameters of the block
             std::vector<flow::ConfigParameterDef> parameters() override;
             
-            /// Returns a nrief description of the block
+            /// Returns a brief description of the block
             std::string description() const override {return    "Bloc kMesh"
                                                                 "   - \n";};
 

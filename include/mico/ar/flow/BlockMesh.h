@@ -30,27 +30,35 @@
 #include <mico/ar/gl_helpers/Mesh.h>
 
 namespace mico{
+    namespace ar {
+        /// Mico block that loads an STL mesh into the AR viewer. Its pose in the space is fed
+        /// by te input stream.
+        /// @ingroup  mico_ar
+        class BlockMesh:public flow::Block{
+        public:
+            /// Get name of block
+            virtual std::string name() const override {return "Block Mesh";}        
+            
+            /// Base constructor that initializes the pipes
+            BlockMesh();
 
-    class BlockMesh:public flow::Block{
-    public:
-        virtual std::string name() const override {return "Block Mesh";}        
-        
-        BlockMesh();
+            /// Configure block with given parameters.
+            virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
+            /// Get list of parameters of the block
+            std::vector<flow::ConfigParameterDef> parameters() override;
+            
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "Bloc kMesh"
+                                                                "   - \n";};
 
-        virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
-        std::vector<flow::ConfigParameterDef> parameters() override;
-        
-        std::string description() const override {return    "Bloc kMesh"
-                                                            "   - \n";};
+        private:
+            Scene3d * scene_;
+            std::shared_ptr<Mesh> mesh_;
 
-    private:
-        Scene3d * scene_;
-        std::shared_ptr<Mesh> mesh_;
+            bool idle_ = true;
+        };
 
-        bool idle_ = true;
-    };
-
-
+    }
 
 }
 

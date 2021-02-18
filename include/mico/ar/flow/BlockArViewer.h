@@ -28,23 +28,30 @@
 #include <mico/ar/gl_helpers/VisualizerGlWidget.h>
 
 namespace mico{
+    namespace ar {
+        /// Mico block instantiate a 3D visualizer for AR blocks.
+        /// @ingroup  mico_ar
+        class BlockArViewer:public flow::Block{
+        public:
+            /// Get name of block
+            virtual std::string name() const override {return "Block AR viewer";}        
+            
+            /// Base constructor that initializes the pipes
+            BlockArViewer();
 
-    class BlockArViewer:public flow::Block{
-    public:
-        virtual std::string name() const override {return "Block AR viewer";}        
-        
-        BlockArViewer();
-        ~BlockArViewer();
+            /// Base destructor that initializes the pipes
+            ~BlockArViewer();
 
-        std::string description() const override {return    "Block AR viewer"
-                                                            "   - \n";};
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "Block AR viewer"
+                                                                "   - \n";};
 
-    private:
-        VisualizerGlWidget* widget_;
-        bool idle_ = true;
-    };
+        private:
+            VisualizerGlWidget* widget_;
+            bool idle_ = true;
+        };
 
-
+    }
 
 }
 

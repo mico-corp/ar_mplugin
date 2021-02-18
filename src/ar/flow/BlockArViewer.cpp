@@ -28,6 +28,7 @@
 #include <Eigen/Eigen>
 
 namespace mico{
+    namespace ar {
         BlockArViewer::BlockArViewer(){
             widget_ = new VisualizerGlWidget();
 
@@ -54,4 +55,5 @@ namespace mico{
         BlockArViewer::~BlockArViewer() {
             delete widget_;
         }
+    }
 }

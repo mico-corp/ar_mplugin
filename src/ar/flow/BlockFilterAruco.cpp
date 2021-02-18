@@ -30,6 +30,7 @@
 #include <opencv2/aruco.hpp>
 
 namespace mico{
+    namespace ar {
         BlockFilterAruco::BlockFilterAruco(){
             
             createPipe<Eigen::Matrix4f>("coordinates");
@@ -67,5 +68,5 @@ namespace mico{
             };
         }
 
-
+    }
 }

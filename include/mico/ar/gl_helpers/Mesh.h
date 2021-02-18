@@ -31,29 +31,31 @@ namespace stl_reader{
 }
 
 namespace mico {
-    /// Class that wraps a single mesh to be display
-    /// @ingroup aerox_gl
-    class Mesh{
-    public:
-        bool loadMesh(std::string _path);
-        void transform(Eigen::Matrix4f _t);
-        void displayMesh();
-        void setColor(float _r, float _g, float _b, float _a);
+    namespace ar {
+        /// Class that wraps a single mesh to be display
+        /// @ingroup aerox_gl
+        class Mesh{
+        public:
+            bool loadMesh(std::string _path);
+            void transform(Eigen::Matrix4f _t);
+            void displayMesh();
+            void setColor(float _r, float _g, float _b, float _a);
 
-    private:
-        void setMaterial(   std::vector<float> _ambient = {0.7f, 0.7f, 0.7f, 1.0f}, 
-                            std::vector<float> _diffuse = {1.0f, 1.0f, 1.0f, 1.0f}, 
-                            std::vector<float> _specular = {1.0f, 1.0f, 1.0f, 1.0f}, 
-                            float _shininess = 5.0f);
+        private:
+            void setMaterial(   std::vector<float> _ambient = {0.7f, 0.7f, 0.7f, 1.0f}, 
+                                std::vector<float> _diffuse = {1.0f, 1.0f, 1.0f, 1.0f}, 
+                                std::vector<float> _specular = {1.0f, 1.0f, 1.0f, 1.0f}, 
+                                float _shininess = 5.0f);
 
-    private:
-        stl_reader::StlMesh<float, unsigned int> *meshReader_;
-        float r_=0.7f, g_=0.7f, b_=0.7f, a_=1.0f;
-        Eigen::Vector3f translation_ = {0,0,0};
-        Eigen::Vector3f rpy_ = {0,0,0};
-        Eigen::Matrix4f pose_;
-    
-    };
+        private:
+            stl_reader::StlMesh<float, unsigned int> *meshReader_;
+            float r_=0.7f, g_=0.7f, b_=0.7f, a_=1.0f;
+            Eigen::Vector3f translation_ = {0,0,0};
+            Eigen::Vector3f rpy_ = {0,0,0};
+            Eigen::Matrix4f pose_;
+        
+        };
+    }
 }
 
 #endif

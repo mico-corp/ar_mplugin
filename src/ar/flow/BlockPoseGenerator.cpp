@@ -30,6 +30,7 @@
 #include <opencv2/aruco.hpp>
 
 namespace mico{
+    namespace ar {
         BlockPoseGenerator::BlockPoseGenerator(){
 
             createPipe<Eigen::Matrix4f>("pose");
@@ -81,5 +82,5 @@ namespace mico{
             };
         }
 
-
+    }
 }

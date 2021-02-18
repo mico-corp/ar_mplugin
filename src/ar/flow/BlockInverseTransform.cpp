@@ -30,25 +30,27 @@
 #include <opencv2/aruco.hpp>
 
 namespace mico{
-    BlockInverseTransform::BlockInverseTransform(){
-        createPipe<Eigen::Matrix4f>("Inverse");
+    namespace ar {
+        BlockInverseTransform::BlockInverseTransform(){
+            createPipe<Eigen::Matrix4f>("Inverse");
 
-        createPolicy({  flow::makeInput<Eigen::Matrix4f>("T") });
+            createPolicy({  flow::makeInput<Eigen::Matrix4f>("T") });
 
-        registerCallback({"T"}, 
-            [&](flow::DataFlow _data){
-                if (!idle_) return;
-                idle_ = false;
+            registerCallback({"T"}, 
+                [&](flow::DataFlow _data){
+                    if (!idle_) return;
+                    idle_ = false;
 
-                auto T = _data.get<Eigen::Matrix4f>("T");
-                if (getPipe("Inverse")->registrations()) {
-                    Eigen::Matrix4f inv = T.inverse().eval();
-                    getPipe("Inverse")->flush(inv);
+                    auto T = _data.get<Eigen::Matrix4f>("T");
+                    if (getPipe("Inverse")->registrations()) {
+                        Eigen::Matrix4f inv = T.inverse().eval();
+                        getPipe("Inverse")->flush(inv);
+                    }
+                                
+                    idle_ = true;
                 }
-                            
-                idle_ = true;
-            }
-        );
+            );
 
+        }
     }
 }

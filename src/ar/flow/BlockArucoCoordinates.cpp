@@ -30,6 +30,7 @@
 #include <opencv2/aruco.hpp>
 
 namespace mico{
+    namespace ar {
         BlockArucoCoordinates::BlockArucoCoordinates(){
             dictionary_ = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);;
 
@@ -154,6 +155,6 @@ namespace mico{
                 {"calibration_file", flow::ConfigParameterDef::eParameterType::STRING, std::string("")}
             };
         }
-
+    }
 
 }

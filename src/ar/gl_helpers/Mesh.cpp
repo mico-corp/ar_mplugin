@@ -36,54 +36,54 @@
 #endif
 
 namespace mico {
-
-    bool Mesh::loadMesh(std::string _path){
-        meshReader_ = new stl_reader::StlMesh<float, unsigned int>(_path);
-        return meshReader_->num_vrts()>0;
-    }
-
-    void Mesh::transform(Eigen::Matrix4f _t){
-        translation_ = _t.block<3,1>(0,3);
-        rpy_ = _t.block<3,3>(0,0).eulerAngles(0, 1, 2); 
-        pose_ = _t;
-    }
-
-    void Mesh::displayMesh(){
-        glMatrixMode(GL_MODELVIEW);                         // To operate on model-view matrix
-        glLoadIdentity();                       // Reset the model-view matrix
-        
-        glTranslatef(translation_[0], translation_[1], translation_[2]);
-        glRotatef(rpy_[0]/M_PI*180.0f, 1,0,0);
-        glRotatef(rpy_[1]/M_PI*180.0f, 0,1,0);
-        glRotatef(rpy_[2]/M_PI*180.0f, 0,0,1);
-        
-        setMaterial({r_, g_, b_, a_}, {r_, g_, b_, a_}, {0,0,0,0}, 1.0f);
-        
-        glBegin(GL_TRIANGLES);
-        for(size_t itri = 0; itri < meshReader_->num_tris(); ++itri) {
-            const float* n = meshReader_->tri_normal (itri);
-            for(size_t icorner = 0; icorner < 3; ++icorner) {
-                const float* c = meshReader_->vrt_coords (meshReader_->tri_corner_ind (itri, icorner));
-                glNormal3f(n[0], n[1], n[2]);
-                glVertex3f(c[0], c[1], c[2]);
+    namespace ar {
+        bool Mesh::loadMesh(std::string _path){
+            meshReader_ = new stl_reader::StlMesh<float, unsigned int>(_path);
+            return meshReader_->num_vrts()>0;
         }
+
+        void Mesh::transform(Eigen::Matrix4f _t){
+            translation_ = _t.block<3,1>(0,3);
+            rpy_ = _t.block<3,3>(0,0).eulerAngles(0, 1, 2); 
+            pose_ = _t;
         }
-        glEnd();
-    }
 
-    void Mesh::setColor(float _r, float _g, float _b, float _a){
-        r_ = _r;
-        g_ = _g;
-        b_ = _b;
-        a_ = _a;
-    }
+        void Mesh::displayMesh(){
+            glMatrixMode(GL_MODELVIEW);                         // To operate on model-view matrix
+            glLoadIdentity();                       // Reset the model-view matrix
+            
+            glTranslatef(translation_[0], translation_[1], translation_[2]);
+            glRotatef(rpy_[0]/M_PI*180.0f, 1,0,0);
+            glRotatef(rpy_[1]/M_PI*180.0f, 0,1,0);
+            glRotatef(rpy_[2]/M_PI*180.0f, 0,0,1);
+            
+            setMaterial({r_, g_, b_, a_}, {r_, g_, b_, a_}, {0,0,0,0}, 1.0f);
+            
+            glBegin(GL_TRIANGLES);
+            for(size_t itri = 0; itri < meshReader_->num_tris(); ++itri) {
+                const float* n = meshReader_->tri_normal (itri);
+                for(size_t icorner = 0; icorner < 3; ++icorner) {
+                    const float* c = meshReader_->vrt_coords (meshReader_->tri_corner_ind (itri, icorner));
+                    glNormal3f(n[0], n[1], n[2]);
+                    glVertex3f(c[0], c[1], c[2]);
+            }
+            }
+            glEnd();
+        }
 
-    void Mesh::setMaterial(std::vector<float> _ambient, std::vector<float> _diffuse, std::vector<float> _specular, float _shininess){
-        glColor4f(_ambient[0], _ambient[1], _ambient[2], _ambient[3]);
-        glMaterialfv(GL_FRONT, GL_AMBIENT, _ambient.data());
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, _diffuse.data());
-        glMaterialfv(GL_FRONT, GL_SPECULAR, _specular.data());
-        glMaterialf(GL_FRONT, GL_SHININESS, _shininess);
-    }
+        void Mesh::setColor(float _r, float _g, float _b, float _a){
+            r_ = _r;
+            g_ = _g;
+            b_ = _b;
+            a_ = _a;
+        }
 
+        void Mesh::setMaterial(std::vector<float> _ambient, std::vector<float> _diffuse, std::vector<float> _specular, float _shininess){
+            glColor4f(_ambient[0], _ambient[1], _ambient[2], _ambient[3]);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, _ambient.data());
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, _diffuse.data());
+            glMaterialfv(GL_FRONT, GL_SPECULAR, _specular.data());
+            glMaterialf(GL_FRONT, GL_SHININESS, _shininess);
+        }
+    }
 }

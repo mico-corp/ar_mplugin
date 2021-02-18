@@ -30,7 +30,7 @@
 #include <mico/ar/flow/BlockInverseTransform.h>
 #include <mico/ar/flow/BlockFilterAruco.h>
 
-using namespace mico;
+using namespace mico::ar;
 using namespace flow;
 
 extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){

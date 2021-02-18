@@ -34,21 +34,27 @@ namespace cv{
 }
 
 namespace mico{
+    namespace ar {
+        /// Mico block that computes the inverse transformation of a given 4x4 matrix that typically
+        /// represents a 3D coordinate in the space.
+        /// @ingroup  mico_ar
+        class BlockInverseTransform:public flow::Block{
+        public:
+            /// Get name of block
+            virtual std::string name() const override {return "Inverse Transform";}        
+            
+            /// Base constructor that initializes the pipes
+            BlockInverseTransform();
 
-    class BlockInverseTransform:public flow::Block{
-    public:
-        virtual std::string name() const override {return "Inverse Transform";}        
-        
-        BlockInverseTransform();
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "Inverse Transform"
+                                                                "   - \n";};
 
-        std::string description() const override {return    "Inverse Transform"
-                                                            "   - \n";};
+        private:
+            bool idle_ = true;
+        };
 
-    private:
-        bool idle_ = true;
-    };
-
-
+    }
 
 }
 

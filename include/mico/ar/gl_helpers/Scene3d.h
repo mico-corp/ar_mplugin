@@ -39,104 +39,105 @@
 #endif
 
 namespace mico{
+    namespace ar {
+        /// Handler of 3d scene to be display using OpenGL
+        /// @ingroup aerox_gl
+        class Scene3d{
+        public:
+            struct Point {
+                float x,y,z;
+            };
 
-    /// Handler of 3d scene to be display using OpenGL
-    /// @ingroup aerox_gl
-    class Scene3d{
-    public:
-        struct Point {
-            float x,y,z;
-        };
+        public:
 
-    public:
-
-        static Scene3d* get() {
-            if (currentInstance_ == nullptr) {
-                currentInstance_ = new Scene3d();
-                currentInstance_->init();
+            static Scene3d* get() {
+                if (currentInstance_ == nullptr) {
+                    currentInstance_ = new Scene3d();
+                    currentInstance_->init();
+                }
+                return currentInstance_;
             }
-            return currentInstance_;
-        }
 
 
-        void stop();
+            void stop();
 
-        int addAxis(const Eigen::Matrix4f &_pose);
-        void updateAxis(int _id, const Eigen::Matrix4f &_pose);
-        void deleteAxis(int _id);
+            int addAxis(const Eigen::Matrix4f &_pose);
+            void updateAxis(int _id, const Eigen::Matrix4f &_pose);
+            void deleteAxis(int _id);
 
-        void addMesh(std::shared_ptr<Mesh> _mesh);
+            void addMesh(std::shared_ptr<Mesh> _mesh);
 
-        void addLine(Point _p1, Point _p2);
+            void addLine(Point _p1, Point _p2);
 
-        void addPointCloud(std::vector<Point> _cloud);  // 666 can make it better
+            void addPointCloud(std::vector<Point> _cloud);  // 666 can make it better
 
-        void addMap(std::vector<Point> _centers, float _side);
+            void addMap(std::vector<Point> _centers, float _side);
 
-        void clearPointClouds() {clouds_.clear();} ;
+            void clearPointClouds() {clouds_.clear();} ;
 
-        void moveCamera(Eigen::Matrix4f _pose);
+            void moveCamera(Eigen::Matrix4f _pose);
 
-        void attachKeyboardfunction(std::function<void(unsigned char, int, int)> _fn);
+            void attachKeyboardfunction(std::function<void(unsigned char, int, int)> _fn);
 
-        void clearGl();
-        void drawAll();
-        void swapBuffers();
+            void clearGl();
+            void drawAll();
+            void swapBuffers();
 
-        void resizeGL(int _width, int _height);
+            void resizeGL(int _width, int _height);
 
-        void setCameraFov(float _fov);
+            void setCameraFov(float _fov);
 
-        void flip() { flip_ = !flip_; };
+            void flip() { flip_ = !flip_; };
 
-    private:
-        Scene3d() {};
-        bool init();
+        private:
+            Scene3d() {};
+            bool init();
 
-        void setMaterial(   std::vector<float> _ambient = {0.7f, 0.7f, 0.7f, 1.0f}, 
-                            std::vector<float> _diffuse = {1.0f, 1.0f, 1.0f, 1.0f}, 
-                            std::vector<float> _specular = {1.0f, 1.0f, 1.0f, 1.0f}, 
-                            float _shininess = 5.0f);
+            void setMaterial(   std::vector<float> _ambient = {0.7f, 0.7f, 0.7f, 1.0f}, 
+                                std::vector<float> _diffuse = {1.0f, 1.0f, 1.0f, 1.0f}, 
+                                std::vector<float> _specular = {1.0f, 1.0f, 1.0f, 1.0f}, 
+                                float _shininess = 5.0f);
 
-        void drawSquare     (const std::vector<Point> &_vertices, const Point &_normal);
-        void drawCube       (const std::vector<Point> &_vertices);
-        void drawCube       (std::vector<std::vector<Point>> _faces);
+            void drawSquare     (const std::vector<Point> &_vertices, const Point &_normal);
+            void drawCube       (const std::vector<Point> &_vertices);
+            void drawCube       (std::vector<std::vector<Point>> _faces);
 
-        void drawAxis(const Eigen::Matrix4f _pose);
+            void drawAxis(const Eigen::Matrix4f _pose);
 
-        void drawOccupancyMap();
+            void drawOccupancyMap();
 
-        bool getHeatMapColor(float value, float *red, float *green, float *blue);
-    private:
-        static Scene3d* currentInstance_;
-        static GLfloat currentAspect_;
-        
-    private:
-        /* Global variables */
-        std::string title_ = "3D Shapes with animation";
-        int refreshMills_ = 15;       // refresh interval in milliseconds [NEW]
+            bool getHeatMapColor(float value, float *red, float *green, float *blue);
+        private:
+            static Scene3d* currentInstance_;
+            static GLfloat currentAspect_;
+            
+        private:
+            /* Global variables */
+            std::string title_ = "3D Shapes with animation";
+            int refreshMills_ = 15;       // refresh interval in milliseconds [NEW]
 
-        std::vector<std::shared_ptr<Mesh> > meshes_;
-        std::vector<std::pair<Point, Point>> lines_;
-        std::vector<std::vector<Point>> clouds_;
-        std::vector<Point> centers_;
-        std::map<int, Eigen::Matrix4f> axis_;
-        int counterAxis_ = 0;
-        float side_ = 0.1;
+            std::vector<std::shared_ptr<Mesh> > meshes_;
+            std::vector<std::pair<Point, Point>> lines_;
+            std::vector<std::vector<Point>> clouds_;
+            std::vector<Point> centers_;
+            std::map<int, Eigen::Matrix4f> axis_;
+            int counterAxis_ = 0;
+            float side_ = 0.1;
 
-        Eigen::Matrix4f cameraPose_;
+            Eigen::Matrix4f cameraPose_;
 
-        static std::vector<std::function<void(unsigned char, int, int)>> keyboardCallbacks_;
+            static std::vector<std::function<void(unsigned char, int, int)>> keyboardCallbacks_;
 
-        bool useGlut_ = false;
+            bool useGlut_ = false;
 
-        float fov_ = 45.0f;
+            float fov_ = 45.0f;
 
-        bool flip_ = false;
+            bool flip_ = false;
 
-    private:
+        private:
 
-    };
+        };
+    }
 }
 
 #endif

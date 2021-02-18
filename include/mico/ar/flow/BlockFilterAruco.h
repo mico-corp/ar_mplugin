@@ -29,24 +29,31 @@
 
 
 namespace mico{
+    namespace ar {
+        /// Mico block that Filters aruco detections by ID.
+        /// @ingroup  mico_ar
+        class BlockFilterAruco:public flow::Block{
+        public:
+            /// Get name of block
+            virtual std::string name() const override {return "Block Filter Aruco CS";}        
+            
+            /// Base constructor that initializes the pipes
+            BlockFilterAruco();
 
-    class BlockFilterAruco:public flow::Block{
-    public:
-        virtual std::string name() const override {return "Block Filter Aruco CS";}        
-        
-        BlockFilterAruco();
+            /// Configure block with given parameters.
+            virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
+            /// Get list of parameters of the block
+            std::vector<flow::ConfigParameterDef> parameters() override;
 
-        virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
-        std::vector<flow::ConfigParameterDef> parameters() override;
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "Block Filter Aruco CS"
+                                                                "   - \n";};
 
-        std::string description() const override {return    "Block Filter Aruco CS"
-                                                            "   - \n";};
-
-    private:
-        int id_ = 0;
-        bool idle_ = true;
-    };
-
+        private:
+            int id_ = 0;
+            bool idle_ = true;
+        };
+    }
 
 
 }

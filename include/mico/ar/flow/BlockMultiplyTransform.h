@@ -34,21 +34,27 @@ namespace cv{
 }
 
 namespace mico{
+    namespace ar {
+        /// Mico block that multiply two input matrices. This block is typically used to
+        /// concatenate transformations in the space.
+        /// @ingroup  mico_ar
+        class BlockMultiplyTransform:public flow::Block{
+        public:
+            /// Get name of block
+            virtual std::string name() const override {return "Multiply transform";}        
+            
+            /// Base constructor that initializes the pipes
+            BlockMultiplyTransform();
 
-    class BlockMultiplyTransform:public flow::Block{
-    public:
-        virtual std::string name() const override {return "Multiply transform";}        
-        
-        BlockMultiplyTransform();
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "Multiply transform"
+                                                                "   - \n";};
 
-        std::string description() const override {return    "Multiply transform"
-                                                            "   - \n";};
+        private:
+            bool idle_ = true;
+        };
 
-    private:
-        bool idle_ = true;
-    };
-
-
+    }
 
 }
 

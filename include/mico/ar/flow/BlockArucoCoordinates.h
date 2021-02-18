@@ -34,29 +34,37 @@ namespace cv{
 }
 
 namespace mico{
+    namespace ar {
+        /// Mico block that detects aruco markers and computes the 3D coordinate frame associated to them.
+        /// @ingroup  mico_ar
+        class BlockArucoCoordinates:public flow::Block{
+        public:
+            /// Get name of block
+            virtual std::string name() const override {return "Block Aruco CS";}        
+            
+            /// Base constructor that initializes the pipes
+            BlockArucoCoordinates();
 
-    class BlockArucoCoordinates:public flow::Block{
-    public:
-        virtual std::string name() const override {return "Block Aruco CS";}        
-        
-        BlockArucoCoordinates();
+            /// Configure block with given parameters.
+            virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
+            
+            /// Get list of parameters of the block
+            std::vector<flow::ConfigParameterDef> parameters() override;
 
-        virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
-        std::vector<flow::ConfigParameterDef> parameters() override;
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "Block Aruco CS"
+                                                                "   - \n";};
 
-        std::string description() const override {return    "Block Aruco CS"
-                                                            "   - \n";};
+        private:
+            int id_ = 1;
+            cv::Ptr<cv::aruco::Dictionary> dictionary_;
 
-    private:
-        int id_ = 1;
-        cv::Ptr<cv::aruco::Dictionary> dictionary_;
+            cv::Mat cameraMatrix_, distCoeffs_;
+            bool isCalibrated_ = false;
+            bool idle_ = true;
+        };
 
-        cv::Mat cameraMatrix_, distCoeffs_;
-        bool isCalibrated_ = false;
-        bool idle_ = true;
-    };
-
-
+    }
 
 }
 

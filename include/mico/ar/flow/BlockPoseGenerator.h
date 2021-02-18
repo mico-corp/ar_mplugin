@@ -34,24 +34,32 @@ namespace cv{
 }
 
 namespace mico{
+    namespace ar {
+        /// Mico block that generates a 3D pose in the space from given position and orientation
+        /// parameters.
+        /// @ingroup  mico_ar
+        class BlockPoseGenerator:public flow::Block{
+        public:
+            /// Get name of block
+            virtual std::string name() const override {return "Block Pose Generator";}        
+            
+            /// Base constructor that initializes the pipes
+            BlockPoseGenerator();
 
-    class BlockPoseGenerator:public flow::Block{
-    public:
-        virtual std::string name() const override {return "Block Pose Generator";}        
-        
-        BlockPoseGenerator();
+            /// Configure block with given parameters.
+            virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
+            /// Get list of parameters of the block
+            std::vector<flow::ConfigParameterDef> parameters() override;
 
-        virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
-        std::vector<flow::ConfigParameterDef> parameters() override;
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "Generator"
+                                                                "   - \n";};
 
-        std::string description() const override {return    "Generator"
-                                                            "   - \n";};
+        private:
+            bool isAbsolute_ = true;
+        };
 
-    private:
-        bool isAbsolute_ = true;
-    };
-
-
+    }
 
 }
 

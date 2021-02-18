@@ -28,6 +28,7 @@
 #include <Eigen/Eigen>
 
 namespace mico{
+    namespace ar {
         BlockMesh::BlockMesh(){
             scene_ = Scene3d::get();
 
@@ -65,5 +66,5 @@ namespace mico{
                 {"mesh_path", flow::ConfigParameterDef::eParameterType::STRING, std::string("")}
             };
         }
-
+    }
 }

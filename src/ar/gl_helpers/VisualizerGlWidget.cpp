@@ -41,7 +41,7 @@ namespace mico{
         }
 
 
-        void VisualizerGlWidget::addPoint(mico::Scene3d::Point _p){
+        void VisualizerGlWidget::addPoint(Scene3d::Point _p){
             
         }
 
@@ -49,7 +49,7 @@ namespace mico{
             pose_ = _pose;
         }
 
-        void VisualizerGlWidget::addLine(mico::Scene3d::Point _p1, mico::Scene3d::Point _p2){
+        void VisualizerGlWidget::addLine(Scene3d::Point _p1, Scene3d::Point _p2){
             scene_->addLine(_p1, _p2);
         }
 
